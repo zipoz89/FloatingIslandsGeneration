@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a53982db8057e984eb80c1adc43baa3c, type: 3}
+  m_Name: Crystal
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 4039947040654391906, guid: 61e523e13415a7948b1293ad4ecc0484, type: 3}
+  - {fileID: 2693004453052219307, guid: 337ce9f08b9076445b8e50306795c13d, type: 3}
+  - {fileID: 4312027674402945255, guid: f6f4b4d0d1fbd144a855f99bfffad016, type: 3}
+  - {fileID: 8645709566838458447, guid: 268d4918557ae0c45b0f1a454f62fc5f, type: 3}
+  Offset: {x: 0, y: 0, z: 0}
+  Radius: 7
+  AcceptableAngle: 150
+  AllowToGenerateOnTop: 0
+  layers:
+    serializedVersion: 2
+    m_Bits: 64

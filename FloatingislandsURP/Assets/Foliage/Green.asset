@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138c86300d9e0cd4788bdc484a72465a, type: 3}
+  m_Name: Green
+  m_EditorClassIdentifier: 
+  objects:
+  - {fileID: 11400000, guid: 2ed482f6340544b4ea3829166775e83f, type: 2}
+  - {fileID: 11400000, guid: 35a981b18ae2fa94e958b969cebc6235, type: 2}
+  - {fileID: 11400000, guid: 6330116fb1ea5114197edf18e791d09d, type: 2}
+  - {fileID: 11400000, guid: 7c3902793bf072645b64613de6f8845e, type: 2}
