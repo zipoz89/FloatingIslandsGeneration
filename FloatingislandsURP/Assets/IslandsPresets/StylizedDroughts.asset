@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636c0bdd464f6ce4f81fd2eee4a87f23, type: 3}
+  m_Name: StylizedDroughts
+  m_EditorClassIdentifier: 
+  terrainMaterial: {fileID: 2100000, guid: d504316cde85da54195adc9175f7478d, type: 2}
+  mapWidth: 100
+  mapHeight: 100
+  upperNoiseScale: 60
+  upperMeshHeightMultiplier: 15.5
+  upperMeshHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.24095854
+      value: 0.19155145
+      inSlope: 0.3052882
+      outSlope: 0.3052882
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09304923
+      outWeight: 0.06941021
+    - serializedVersion: 3
+      time: 0.44893134
+      value: 0.31876415
+      inSlope: -0.00034917906
+      outSlope: -0.00034917906
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08204156
+      outWeight: 0.092475384
+    - serializedVersion: 3
+      time: 0.84463567
+      value: 0.58766544
+      inSlope: 2.1465306
+      outSlope: 2.1465306
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  upperOctaves: 2
+  upperPersistance: 0.5
+  upperLacunarity: 2
+  upperOffset: {x: 0, y: 0}
+  lowerNoiseScale: 35.24
+  lowerMeshHeightMultiplier: 27.6
+  lowerMeshHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5082095
+      value: 0.25827688
+      inSlope: 1.0164192
+      outSlope: 1.0164192
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  lowerOctaves: 4
+  lowerPersistance: 0.5
+  lowerLacunarity: 2
+  lowerOffset: {x: -2.65, y: 0}
+  useDifferentMapForIsland: 0
+  foliage: {fileID: 11400000, guid: 69bbc35fd8b823642bed41858834ac2f, type: 2}

@@ -60,22 +60,25 @@ public static class MeshGenerator
                     if (x < width - 1 && y < height - 1)
                     {
 
-                        if (x >= 1 && y >= 1)
-                        {
-                            if (!(islandOutline[x - 1, y] == 0 && islandOutline[x, y + 1] == 0))
-                            {
-                                meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
-                            }
-                            if (!(islandOutline[x, y - 1] == 0 && islandOutline[x + 1, y] == 0))
-                            {
-                                meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
-                            }
-                        }
-                        else
-                        {
-                            meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
-                            meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
-                        }
+                        //if (x >= 1 && y >= 1)
+                        //{
+                        //    if (!(islandOutline[x - 1, y] == 0 && islandOutline[x, y + 1] == 0))
+                        //    {
+                        //        meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
+                        //    }
+                        //    if (!(islandOutline[x, y - 1] == 0 && islandOutline[x + 1, y] == 0))
+                        //    {
+                        //        meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
+                        //    meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
+                        //}
+
+                        meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
+                        meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
 
                         //meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
                         //meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
@@ -213,7 +216,7 @@ public static class MeshGenerator
 
     public static IslandMeshData GenerateIslandMesh(float[,] upperHeightMap, float upperHeightMultipier, AnimationCurve upperMeshHeightCurve,
                                               float[,] lowerHeightMap, float lowerHeightMultipier, AnimationCurve lowerMeshHeightCurve, 
-                                              int[,] islandOutline, bool edgeSmoothing)
+                                              int[,] islandOutline)
     {
         int width = upperHeightMap.GetLength(0);
         int height = upperHeightMap.GetLength(1);
@@ -236,7 +239,7 @@ public static class MeshGenerator
                 if (islandOutline[x, y] == 1)
                 {
                     upperMeshHeight = upperMeshHeightCurve.Evaluate(upperHeightMap[x, y]) * upperHeightMultipier;
-                    lowerMeshHeight = -upperMeshHeightCurve.Evaluate(lowerHeightMap[x, y]) * lowerHeightMultipier;
+                    lowerMeshHeight = -lowerMeshHeightCurve.Evaluate(lowerHeightMap[x, y]) * lowerHeightMultipier;
                 }
                 else 
                 {
@@ -304,7 +307,6 @@ public static class MeshGenerator
                             {
                                 meshData.AddTriangle(V3, V2, V1);
                             }
-
                         }
                         else
                         {
@@ -323,46 +325,79 @@ public static class MeshGenerator
         vertexIndex = 0;
 
         //krawędzie do y = 0
-        if (edgeSmoothing)
+
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                for (int x = 0; x < width; x++)
+                if (islandOutline[x, y] != 1)
                 {
-                    if (islandOutline[x, y] != 1)
+                    if (x > 1 && y > 1 && x < width - 1 && y < height - 1)
                     {
-                        if (x > 1 && y > 1 && x < width - 1 && y < height - 1)
+                        if (islandOutline[x + 1, y] == 1)
                         {
-                            if (islandOutline[x + 1, y] == 1)
-                            {
-                                meshData.vertices[vertexIndex + 1].y = 0;
-                                meshData.vertices[vertexIndex + lowerArrOffset + 1].y = 0;
-                            }
-                            if (islandOutline[x, y + 1] == 1)
-                            {
-                                meshData.vertices[vertexIndex + width].y = 0;
-                                meshData.vertices[vertexIndex + lowerArrOffset + width].y = 0;
-                            }
-                            if (islandOutline[x + 1, y + 1] == 1)
-                            {
-                                meshData.vertices[vertexIndex + width + 1].y = 0;
-                                meshData.vertices[vertexIndex + lowerArrOffset + width + 1].y = 0;
-                            }
-
-                            if (islandOutline[x - 1, y - 1] == 1 || islandOutline[x - 1, y] == 1 || islandOutline[x, y - 1] == 1)
-                            {
-                                meshData.vertices[vertexIndex].y = 0;
-                                meshData.vertices[vertexIndex + lowerArrOffset].y = 0;
-                            }
-
+                            meshData.vertices[vertexIndex + 1].y = 0;
+                            meshData.vertices[vertexIndex + lowerArrOffset + 1].y = 0;
                         }
+                        if (islandOutline[x, y + 1] == 1)
+                        {
+                            meshData.vertices[vertexIndex + width].y = 0;
+                            meshData.vertices[vertexIndex + lowerArrOffset + width].y = 0;
+                        }
+                        if (islandOutline[x + 1, y + 1] == 1)
+                        {
+                            meshData.vertices[vertexIndex + width + 1].y = 0;
+                            meshData.vertices[vertexIndex + lowerArrOffset + width + 1].y = 0;
+                        }
+
+                        if (islandOutline[x - 1, y - 1] == 1 || islandOutline[x - 1, y] == 1 || islandOutline[x, y - 1] == 1)
+                        {
+                            meshData.vertices[vertexIndex].y = 0;
+                            meshData.vertices[vertexIndex + lowerArrOffset].y = 0;
+                        }
+
                     }
-                    vertexIndex++;
                 }
+                else
+                {
+                    int V1 = vertexIndex;
+                    int V3 = vertexIndex + width + 1;
+
+
+                    bool v1NeedSmoothing = false;
+
+                    if (islandOutline[x - 1, y] != 1 && islandOutline[x - 1, y - 1] != 1 && islandOutline[x, y - 1] != 1)
+                    {
+                        v1NeedSmoothing = true;
+                    }
+
+                    bool v3NeedSmoothing = false;
+
+                    if (islandOutline[x + 1, y] != 1 && islandOutline[x, y + 1] != 1 && islandOutline[x + 1, y + 1] != 1)
+                    {
+                        v3NeedSmoothing = true;
+                    }
+
+
+                    if (v1NeedSmoothing)
+                    {
+                        Vector3 newVertPos = new Vector3(meshData.vertices[V1].x + 0.5f, meshData.vertices[V1].y, meshData.vertices[V1].z - 0.5f);
+                        meshData.vertices[V1] = newVertPos;
+                    }
+                    if (v3NeedSmoothing)
+                    {
+                        Vector3 newVertPos = new Vector3(meshData.vertices[V3].x - 0.5f, meshData.vertices[V3].y, meshData.vertices[V3].z + 0.5f);
+                        meshData.vertices[V3] = newVertPos;
+                    }
+
+                }
+
+                vertexIndex++;
             }
-
-
         }
+
+
+
 
         return meshData;
     }

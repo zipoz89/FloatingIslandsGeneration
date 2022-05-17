@@ -10,7 +10,7 @@ public class FoliageObject : ScriptableObject
     public float Radius = 1;
     public float AcceptableAngle;
 
-    public bool AllowToGenerateOnTop;
+    public bool RandomRotation;
 
     public LayerMask layers;
 

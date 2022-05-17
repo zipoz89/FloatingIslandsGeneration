@@ -8,7 +8,6 @@ public class IslandPreset : ScriptableObject
     public Material terrainMaterial;
 
     [Header("Heightmap Settings")]
-    public int seed;
     public int mapWidth;
     public int mapHeight;
 

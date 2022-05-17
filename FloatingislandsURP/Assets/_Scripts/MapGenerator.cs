@@ -6,75 +6,51 @@ using System.Linq;
 public enum MARCHING_MODE { CUBES, TETRAHEDRON };
 public class MapGenerator : MonoBehaviour
 {
-    [SerializeField] private enum DrawMode { NoiseMap, Mesh, FalloffMap, IslandOutline , UpperIsland ,LowerIsland,FullIsland, FullIslandCombined,test}
+    [Header("Island Setting")]
+    [SerializeField] private int seed;
+    [SerializeField] private enum DrawMode { NoiseMap,LowerNoiseMap, Mesh, FalloffMap, IslandOutline , UpperIsland ,LowerIsland,FullIsland, FullIslandCombined,test}
 
     [SerializeField] private DrawMode drawMode;
+    [SerializeField] private IslandPreset preset;
+    [SerializeField] private bool useDifferentMapForIsland;
+    [Range(0.0001f, 1f)]
+    [SerializeField] private float islandMinHeightValue = 0.0001f;
+    [SerializeField] private bool edgeDump = true;
 
-    
-    //[Header("Heightmap Settings")]
-    //[SerializeField] private int seed;
-    //[SerializeField] private int mapWidth;
-    //[SerializeField] private int mapHeight;
-
-    //[Header("Upper half Settings")]
-    //[SerializeField] private float noiseScale;
-    //[SerializeField] private float meshHeightMultiplier;
-    //[SerializeField] private AnimationCurve meshHeightCurve;
-    //[SerializeField] private int octaves;
-    //[Range(0, 1)]
-    //[SerializeField] private float persistance;
-    //[SerializeField] private float lacunarity;
-    //[SerializeField] private Vector2 offset;
-
-    //[Header("Lower half Settings")]
-    //[SerializeField] private float lowerNoiseScale;
-    //[SerializeField] private float lowerMeshHeightMultiplier;
-    //[SerializeField] private AnimationCurve lowerMeshHeightCurve;
-    //[SerializeField] private int lowerOctaves;
-    //[Range(0, 1)]
-    //[SerializeField] private float lowerPersistance;
-    //[SerializeField] private float lowerLacunarity;
-    //[SerializeField] private Vector2 lowerOffset;
-
-    [SerializeField] private IslandPreset island;
-    [SerializeField] private MapDisplay display;
-    [Header("Modifiers")]
-    [SerializeField] private bool autoUpdate = false;
-    [SerializeField] private bool edgeDump;
     [Header("Falloff Settings")]
     [SerializeField] private bool useFalloff;
     [SerializeField] private bool useRoundFalloff;
     [SerializeField] private int falloffRadius;
     
-    [SerializeField] private MARCHING_MODE mode = MARCHING_MODE.CUBES;
+    private MARCHING_MODE mode = MARCHING_MODE.CUBES;
 
-    [SerializeField] private bool useDifferentMapForIsland;
 
-    [Range(0.0001f, 1f)]
-    [SerializeField] private float islandMinHeightValue = 0.0001f;
+
     private float[,] falloffMap;
 
     //[SerializeField] private Material terrainMaterial;
     public bool AutoUpdate { get => autoUpdate; }
 
 
-    [SerializeField] private Layer[] layers;
-
     private const int textureSize = 1024;
     private const TextureFormat textureFormat = TextureFormat.RGB565;
 
+    [Header("References")]
+    [SerializeField] private MapDisplay display;
     [SerializeField] private FoliageGenerator fg;
+    [Header("Auto Update")]
     [SerializeField] private bool autoGenerateFoliage;
+    [SerializeField] private bool autoUpdate = false;
 
     private void GenerateFalloff() 
     {
-        if (!island)
+        if (!preset)
             return;
 
         if (useRoundFalloff)
-            falloffMap = FalloffGenerator.GenerateRoundFalloffMap(island.mapWidth, falloffRadius);
+            falloffMap = FalloffGenerator.GenerateRoundFalloffMap(preset.mapWidth, falloffRadius);
         else
-            falloffMap = FalloffGenerator.GenerateFalloffMap(island.mapWidth);
+            falloffMap = FalloffGenerator.GenerateSquareFalloffMap(preset.mapWidth);
     }
 
 
@@ -90,7 +66,7 @@ public class MapGenerator : MonoBehaviour
 
     public float minHeight {
         get {
-            return island.upperNoiseScale * island.upperMeshHeightMultiplier * island.upperMeshHeightCurve.Evaluate(0);
+            return preset.upperNoiseScale * preset.upperMeshHeightMultiplier * preset.upperMeshHeightCurve.Evaluate(0);
         }
     }
 
@@ -98,7 +74,7 @@ public class MapGenerator : MonoBehaviour
     {
         get
         {
-            return island.upperNoiseScale * island.upperMeshHeightMultiplier * island.upperMeshHeightCurve.Evaluate(1);
+            return preset.upperNoiseScale * preset.upperMeshHeightMultiplier * preset.upperMeshHeightCurve.Evaluate(1);
         }
     }
 
@@ -107,31 +83,32 @@ public class MapGenerator : MonoBehaviour
         
 
         //Generuje mape szumów typu "teren"
-        float[,] noiseMap = Noise.GenerateTerrainNoiseMap(island.mapWidth, island.mapHeight, island.seed, island.upperNoiseScale, island.upperOctaves, island.upperPersistance, island.upperLacunarity, island.upperOffset);
+        float[,] upperHeightMap = Noise.GenerateTerrainNoiseMap(preset.mapWidth, preset.mapHeight, seed, preset.upperNoiseScale, preset.upperOctaves, preset.upperPersistance, preset.upperLacunarity, preset.upperOffset);
 
-        Color[] colorMap = new Color[island.mapWidth * island.mapHeight];
+        Color[] colorMap = new Color[preset.mapWidth * preset.mapHeight];
 
-        for (int y = 0; y < island.mapHeight; y++)
+        GenerateFalloff();
+        for (int y = 0; y < preset.mapHeight; y++)
         {
-            for (int x = 0; x < island.mapWidth; x++)
+            for (int x = 0; x < preset.mapWidth; x++)
             {
                 if (useFalloff) 
                 {
-                    noiseMap[x, y] = Mathf.Clamp01(noiseMap[x, y] - falloffMap[x, y]);
+                    upperHeightMap[x, y] = Mathf.Clamp01(upperHeightMap[x, y] - falloffMap[x, y]);
                 }
                 //ustawia wysokość pod x,y
-                float currentHeight = noiseMap[x, y];
+                float currentHeight = upperHeightMap[x, y];
             }
         }
 
-        int[,] islandOutline = OutlineGenerator.generateIslandOutline(noiseMap, islandMinHeightValue);
+        int[,] islandOutline = OutlineGenerator.generateIslandOutline(upperHeightMap, islandMinHeightValue);
 
         if (useDifferentMapForIsland) 
         {
-            float[,] noiseMap2 = Noise.GenerateTerrainNoiseMap(island.mapWidth, island.mapHeight, island.seed +1, island.upperNoiseScale, island.upperOctaves, island.upperPersistance, island.upperLacunarity, island.upperOffset);
-            for (int y = 0; y < island.mapHeight; y++)
+            float[,] noiseMap2 = Noise.GenerateTerrainNoiseMap(preset.mapWidth, preset.mapHeight, seed +1, preset.upperNoiseScale, preset.upperOctaves, preset.upperPersistance, preset.upperLacunarity, preset.upperOffset);
+            for (int y = 0; y < preset.mapHeight; y++)
             {
-                for (int x = 0; x < island.mapWidth; x++)
+                for (int x = 0; x < preset.mapWidth; x++)
                 {
                     noiseMap2[x, y] = Mathf.Clamp01(noiseMap2[x, y] - falloffMap[x, y]);
                 }
@@ -141,18 +118,22 @@ public class MapGenerator : MonoBehaviour
 
         //GenerateMaterial();
 
-        float[,] lowerNoiseMap = Noise.GenerateTerrainNoiseMap(island.mapWidth, island.mapHeight, -island.seed, island.lowerNoiseScale, island.lowerOctaves, island.lowerPersistance, island.lowerLacunarity, island.lowerOffset);
+        float[,] lowerHeightMap = Noise.GenerateTerrainNoiseMap(preset.mapWidth, preset.mapHeight, -seed, preset.lowerNoiseScale, preset.lowerOctaves, preset.lowerPersistance, preset.lowerLacunarity, preset.lowerOffset);
 
 
 
 
         if (drawMode == DrawMode.NoiseMap)
         {
-            display.DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
+            display.DrawTexture(TextureGenerator.TextureFromHeightMap(upperHeightMap));
+        }
+        else if (drawMode == DrawMode.LowerNoiseMap)
+        {
+            display.DrawTexture(TextureGenerator.TextureFromHeightMap(lowerHeightMap));
         }
         else if (drawMode == DrawMode.Mesh)
         {
-            display.DrawMesh(MeshGenerator.GenerateMesh(noiseMap, island.upperMeshHeightMultiplier, island.upperMeshHeightCurve), island.terrainMaterial);
+            display.DrawMesh(MeshGenerator.GenerateMesh(upperHeightMap, preset.upperMeshHeightMultiplier, preset.upperMeshHeightCurve), preset.terrainMaterial);
         }
         else if (drawMode == DrawMode.FalloffMap)
         {
@@ -164,51 +145,36 @@ public class MapGenerator : MonoBehaviour
         }
         else if (drawMode == DrawMode.UpperIsland)
         {
-            display.DrawMesh(MeshGenerator.GenerateUpperIslandMesh(noiseMap, island.upperMeshHeightMultiplier, island.upperMeshHeightCurve, islandOutline, edgeDump), island.terrainMaterial);
+            display.DrawMesh(MeshGenerator.GenerateUpperIslandMesh(upperHeightMap, preset.upperMeshHeightMultiplier, preset.upperMeshHeightCurve, islandOutline, edgeDump), preset.terrainMaterial);
         }
         else if (drawMode == DrawMode.LowerIsland)
         {
-            display.DrawMesh(MeshGenerator.GenerateLowerIslandMesh(lowerNoiseMap, island.lowerMeshHeightMultiplier, island.lowerMeshHeightCurve, islandOutline, edgeDump), island.terrainMaterial);
+            display.DrawMesh(MeshGenerator.GenerateLowerIslandMesh(lowerHeightMap, preset.lowerMeshHeightMultiplier, preset.lowerMeshHeightCurve, islandOutline, edgeDump), preset.terrainMaterial);
         }
         else if (drawMode == DrawMode.FullIsland)
         {
-            var upper = MeshGenerator.GenerateUpperIslandMesh(noiseMap, island.upperMeshHeightMultiplier, island.upperMeshHeightCurve, islandOutline, edgeDump);
-            var lower = MeshGenerator.GenerateLowerIslandMesh(lowerNoiseMap, island.lowerMeshHeightMultiplier, island.lowerMeshHeightCurve, islandOutline, edgeDump);
-            display.DrawIsland(upper, lower, island.terrainMaterial);
+            var upper = MeshGenerator.GenerateUpperIslandMesh(upperHeightMap, preset.upperMeshHeightMultiplier, preset.upperMeshHeightCurve, islandOutline, edgeDump);
+            var lower = MeshGenerator.GenerateLowerIslandMesh(lowerHeightMap, preset.lowerMeshHeightMultiplier, preset.lowerMeshHeightCurve, islandOutline, edgeDump);
+            display.DrawIsland(upper, lower, preset.terrainMaterial);
         }
         else if (drawMode == DrawMode.FullIslandCombined)
         {
-            var mesh = MeshGenerator.GenerateIslandMesh(noiseMap, island.upperMeshHeightMultiplier, island.upperMeshHeightCurve, lowerNoiseMap, island.lowerMeshHeightMultiplier, island.lowerMeshHeightCurve, islandOutline, edgeDump);
-            display.DrawIsland(mesh, island.terrainMaterial);
+            var mesh = MeshGenerator.GenerateIslandMesh(upperHeightMap, preset.upperMeshHeightMultiplier, preset.upperMeshHeightCurve, lowerHeightMap, preset.lowerMeshHeightMultiplier, preset.lowerMeshHeightCurve, islandOutline);
+            display.DrawIsland(mesh, preset.terrainMaterial);
         }
         else if (drawMode == DrawMode.test)
         {
-            var mesh = MeshGenerator.GenerateIslandMesh(noiseMap, island.upperMeshHeightMultiplier, island.upperMeshHeightCurve, lowerNoiseMap, island.lowerMeshHeightMultiplier, island.lowerMeshHeightCurve, islandOutline, edgeDump);
+            var mesh = MeshGenerator.GenerateIslandMesh(upperHeightMap, preset.upperMeshHeightMultiplier, preset.upperMeshHeightCurve, lowerHeightMap, preset.lowerMeshHeightMultiplier, preset.lowerMeshHeightCurve, islandOutline);
             int meshLength;
-            var voxel = MapConverter.IslandHeightMapsToVoxels(mesh, island.mapWidth, island.mapHeight,out meshLength);
-            display.DrawMarching(voxel, island.mapWidth, island.mapHeight,meshLength, island.terrainMaterial, mode);
+            var voxel = MapConverter.IslandHeightMapsToVoxels(mesh, preset.mapWidth, preset.mapHeight,out meshLength);
+            display.DrawMarching(voxel, preset.mapWidth, preset.mapHeight,meshLength, preset.terrainMaterial, mode);
         }
 
-        if (fg && autoGenerateFoliage && island.foliage)
+        if (fg && autoGenerateFoliage && preset.foliage)
         {
-            fg.GenerateFoliage(island.foliage, island.seed);
+            fg.GenerateFoliage(preset.foliage,new Vector2(preset.mapWidth,preset.mapHeight), seed);
         }
     }
-
-    //private void GenerateMaterial()
-    //{
-    //    terrainMaterial.SetInt("layerCount", layers.Length);
-    //    terrainMaterial.SetColorArray("baseColors", layers.Select(x => x.tint).ToArray());
-    //    terrainMaterial.SetFloatArray("baseStartHeights", layers.Select(x => x.StartHeight).ToArray());
-    //    terrainMaterial.SetFloatArray("baseBlends", layers.Select(x => x.blendStrength).ToArray());
-    //    terrainMaterial.SetFloatArray("baseColorStrength", layers.Select(x => x.tintStrength).ToArray());
-    //    terrainMaterial.SetFloatArray("baseTextureScales", layers.Select(x => x.textureScale).ToArray());
-    //    Texture2DArray textureArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
-    //    terrainMaterial.SetTexture("baseTextures", textureArray);
-
-    //    terrainMaterial.SetFloat("minHeight", minHeight);
-    //    terrainMaterial.SetFloat("maxHeight", maxHeight);
-    //}
 
     private Texture2DArray GenerateTextureArray(Texture2D[] textures) 
     {
@@ -223,7 +189,7 @@ public class MapGenerator : MonoBehaviour
 
     private void OnValidate()
     {
-        GenerateFalloff();
+        
     }
 
 }

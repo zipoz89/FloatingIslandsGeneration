@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: StylizedGreen
   m_EditorClassIdentifier: 
   terrainMaterial: {fileID: 2100000, guid: b2342b8e64d29db4c8d3a67b336ac641, type: 2}
-  seed: 13
-  mapWidth: 50
-  mapHeight: 50
-  upperNoiseScale: 99.5
-  upperMeshHeightMultiplier: 15.5
+  mapWidth: 100
+  mapHeight: 100
+  upperNoiseScale: 50
+  upperMeshHeightMultiplier: 15
   upperMeshHeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -31,28 +30,19 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.18816465
-      value: 0.13529533
-      inSlope: 0.3052882
-      outSlope: 0.3052882
+      time: 0.35599506
+      value: 0.14555451
+      inSlope: 1.1854157
+      outSlope: 1.1854157
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.09304923
-      outWeight: 0.06941021
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5731684
-      value: 0.31250805
-      inSlope: -0.00034917906
-      outSlope: -0.00034917906
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.08204156
-      outWeight: 0.092475384
-    - serializedVersion: 3
-      time: 0.85708684
-      value: 0.6939162
-      inSlope: 2.1465306
-      outSlope: 2.1465306
+      time: 0.6368083
+      value: 0.59452635
+      inSlope: 1.6966114
+      outSlope: 1.6966114
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -70,7 +60,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   upperOctaves: 4
-  upperPersistance: 0
+  upperPersistance: 0.5
   upperLacunarity: 2
   upperOffset: {x: 0, y: 0}
   lowerNoiseScale: 35.24
@@ -113,4 +103,4 @@ MonoBehaviour:
   lowerLacunarity: 2
   lowerOffset: {x: -2.65, y: 0}
   useDifferentMapForIsland: 0
-  foliage: {fileID: 11400000, guid: 94b539a3c7aa38a48b0d6f742aad2ad3, type: 2}
+  foliage: {fileID: 11400000, guid: e97a6c0ccff932143878f5a7030a7217, type: 2}

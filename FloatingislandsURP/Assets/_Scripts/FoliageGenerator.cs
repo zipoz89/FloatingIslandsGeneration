@@ -17,15 +17,15 @@ public class FoliageGenerator : MonoBehaviour
 
     public void GenerateFoliage(int seed = 1) 
     {
-        GenerateFoliage(new FoliageSet(objects), seed);
+        GenerateFoliage(new FoliageSet(objects),regionSize, seed);
     }
 
-    public void GenerateFoliage(FoliageSet set, int seed = 1)
+    public void GenerateFoliage(FoliageSet set,Vector2 regionSize, int seed = 1)
     {
         ClearFoliage();
 
         int it = 0;
-
+        
         foreach (var foliage in set.objects)
         {
 
@@ -46,6 +46,10 @@ public class FoliageGenerator : MonoBehaviour
                     {
                         GameObject o = Instantiate(foliage.Prefab);
                         o.transform.position = hit.point + foliage.Offset;
+                        if (foliage.RandomRotation) 
+                        {
+                            o.transform.rotation = Quaternion.Euler(0,Random.Range(0,360),0);
+                        }
                         if (parent)
                             o.transform.parent = parent;
                     }
