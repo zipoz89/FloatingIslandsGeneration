@@ -1,6 +1,6 @@
 This is an implementation of my graduation work for my College.
 
-The goal was to create a program in Unity that would generate 3D models of Floating Islands.
+The goal was to create a program in Unity that would randomly generate 3D models of Floating Islands.
 
 Here are some examples of islands generated using my project
 
